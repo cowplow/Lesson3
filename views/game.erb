@@ -1,0 +1,68 @@
+<h4><%= session[:player_name]%>, you are betting <%= session[:current_bet] %> chips.  You have <%= session[:chip_count] %> chips remaining.</h4> 
+
+<ul>
+  <% session[:player_cards].each do |card| %>
+    <li>
+        You have the <%= CARD_NAMES[card[0]] %> of <%= SUITS[card[1]] %>.
+    </li>
+  <% end %>
+</ul>
+
+<h4>Your hand has a value of <%= calculate_hand_value(session[:player_cards]) %></h4>
+
+<% if session[:blackjack_or_bust] == "bust" || session[:blackjack_or_bust] == "blackjack" %> 
+  <% session[:dealer_active] = true %>
+<% end %>
+
+<% if !session[:dealer_active] %>
+  <ul>
+      <li>
+          Dealer has the <%= CARD_NAMES[session[:dealer_cards][1][0]] %> of <%= SUITS[session[:dealer_cards][1][1]] %>.
+      </li>
+  </ul>
+
+  <h4>Dealer's hand has a value of <%= calculate_hand_value([session[:dealer_cards][1]]) %></h4>
+<% else %>
+
+  <ul>
+  <% session[:dealer_cards].each do |card| %>
+    <li>
+        Dealer has the <%= CARD_NAMES[card[0]] %> of <%= SUITS[card[1]] %>.
+    </li>
+  <% end %>
+  </ul>
+
+  <h4>Dealer's hand has a value of <%= calculate_hand_value(session[:dealer_cards]) %></h4>
+<% end %>
+
+<% if session[:blackjack_or_bust] != "bust" && session[:blackjack_or_bust] != "blackjack" %> 
+  <% if !session[:stay] %>
+    <h4>Would you like to Hit or Stay?</h4>
+
+    <p>
+      <form action='/hit' method='post'>
+        <input class='btn' type='submit' value='Hit'> 
+      </form>
+      <form action='/stay' method='post'>
+        <input class='btn' type='submit' value='Stay'>
+      </form>
+    </p>
+  <% else %>
+    <h4>You have elected to stay.</h4>
+  <% end %>
+<% elsif  session[:blackjack_or_bust] == "bust" %>
+  <h4>Sorry, you have busted.</h4>
+<% else %>
+  <h4>Congratulations, you have hit BlackJack.</h4>
+<% end %>
+
+<% if session[:blackjack_or_bust] == "bust" || session[:blackjack_or_bust] == "blackjack" || session[:stay] %> 
+  <h4>Continue with Dealer Turn?</h4>
+  <form action='/comp_turn' method='post'>
+    <input class='btn' type='submit' value='Continue'>
+  </form>
+<% end %>
+
+<%= p session[:blackjack_or_bust] %>
+
+

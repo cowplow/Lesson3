@@ -1,0 +1,15 @@
+<h4>
+  <%= session[:player_name] %>, you currently have <%= session[:chip_count] %> chips!  How many would you like to wager on the next hand?
+</h4>
+<h5>If this is your first hand the Same button will default to 50 chips.</h5>
+
+
+<form action='/new_bet' method='post'>
+  Chips: <input type='text' name='current_bet'>
+  <br/>
+  <input type='submit' class='btn'>
+</form>
+
+<form action='/same_bet' method='post'>
+  <input class='btn' type='submit' value='Same'> 
+</form>
