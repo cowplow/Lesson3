@@ -116,10 +116,23 @@ post '/hit' do
   elsif blackjack?(calculate_hand_value(session[:player_cards]))
       session[:black_jack_or_bust] = "blackjack"
   end
-  redirect :game
+  redirect '/game'
 end
 
 post '/stay' do
   session[:stay] = true
-  redirect :game
+  redirect '/game'
 end 
+
+post '/comp_turn' do
+  if calculate_hand_value(session[:dealer_cards]) >= 17
+    redirect '/outcome'
+  else
+    session[:dealer_cards] << deal_one_card
+  end
+  redirect '/game'
+end
+
+get '/outcome' do
+  erb :outcome
+end

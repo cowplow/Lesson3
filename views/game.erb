@@ -10,7 +10,7 @@
 
 <h4>Your hand has a value of <%= calculate_hand_value(session[:player_cards]) %></h4>
 
-<% if session[:blackjack_or_bust] == "bust" || session[:blackjack_or_bust] == "blackjack" %> 
+<% if session[:black_jack_or_bust] == "bust" || session[:black_jack_or_bust] == "blackjack" %> 
   <% session[:dealer_active] = true %>
 <% end %>
 
@@ -35,7 +35,7 @@
   <h4>Dealer's hand has a value of <%= calculate_hand_value(session[:dealer_cards]) %></h4>
 <% end %>
 
-<% if session[:blackjack_or_bust] != "bust" && session[:blackjack_or_bust] != "blackjack" %> 
+<% if session[:black_jack_or_bust] != "bust" && session[:black_jack_or_bust] != "blackjack" %> 
   <% if !session[:stay] %>
     <h4>Would you like to Hit or Stay?</h4>
 
@@ -50,19 +50,26 @@
   <% else %>
     <h4>You have elected to stay.</h4>
   <% end %>
-<% elsif  session[:blackjack_or_bust] == "bust" %>
+<% elsif  session[:black_jack_or_bust] == "bust" %>
   <h4>Sorry, you have busted.</h4>
 <% else %>
   <h4>Congratulations, you have hit BlackJack.</h4>
 <% end %>
 
-<% if session[:blackjack_or_bust] == "bust" || session[:blackjack_or_bust] == "blackjack" || session[:stay] %> 
-  <h4>Continue with Dealer Turn?</h4>
-  <form action='/comp_turn' method='post'>
-    <input class='btn' type='submit' value='Continue'>
-  </form>
+<% if session[:black_jack_or_bust] == "bust" || session[:black_jack_or_bust] == "blackjack" || session[:stay] %>
+  <% if !session[:dealer_active] %>
+    <h4>Reveal Dealer Hole Card?</h4>
+    <% session[:dealer_active] = true %>
+    <form action='/game' method='get'>
+      <input class='btn' type='submit' value='Reveal'>
+    </form>
+  <% else %> 
+    <h4>Continue with Dealer Turn?</h4>
+    <form action='/comp_turn' method='post'>
+      <input class='btn' type='submit' value='Continue'>
+    </form>
+  <% end %>
 <% end %>
 
-<%= p session[:blackjack_or_bust] %>
 
 
