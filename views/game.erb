@@ -1,75 +1,63 @@
-<h4><%= session[:player_name]%>, you are betting <%= session[:current_bet] %> chips.  You have <%= session[:chip_count] %> chips remaining.</h4> 
+<h1>Blackjack!</h1>
 
-<ul>
-  <% session[:player_cards].each do |card| %>
-    <li>
-        You have the <%= CARD_NAMES[card[0]] %> of <%= SUITS[card[1]] %>.
-    </li>
-  <% end %>
-</ul>
+<p>Welcome <%= session[:player_name] %></p>
 
-<h4>Your hand has a value of <%= calculate_hand_value(session[:player_cards]) %></h4>
 
-<% if session[:black_jack_or_bust] == "bust" || session[:black_jack_or_bust] == "blackjack" %> 
-  <% session[:dealer_active] = true %>
+<div class='well'>
+  <h4>Dealer's cards:</h4>
+
+    <% if session[:dealer_active] %>
+      <% session[:dealer_cards].each do |card| %>
+        <%= display_card(card) %>
+      <% end %>
+    <% else %>
+      <%= display_card(session[:dealer_cards][0], true) %>
+      <%= display_card(session[:dealer_cards][1]) %>
+    <% end %>
+</div>
+
+</br>
+
+<p>Dealer's Total: <%= session[:dealer_active] ? calculate_hand(session[:dealer_cards]) : calculate_hand([session[:dealer_cards][1]]) %></p>
+
+</br>
+
+<div class='well'>
+  <h4><%= session[:player_name] %>'s Cards:<h4>
+    <% session[:player_cards].each do |card| %>
+      <%= display_card(card) %>
+    <% end %>
+</div>
+
+
+</br>
+
+<p><%= session[:player_name] %> 's Total: <%= calculate_hand(session[:player_cards]) %></p>
+
+</br>
+
+<% if !session[:player_turn_over] %>
+  <p>Would you like to hit or stay?</p>
+
+  <form action='/game' method='post'>
+    <input class='btn btn-info' type='submit' value='Hit' name='hit'/>
+    <input class='btn btn-warning' type='submit' value='Stay' name='stay'/> 
+  </form>
 <% end %>
 
-<% if !session[:dealer_active] %>
-  <ul>
-      <li>
-          Dealer has the <%= CARD_NAMES[session[:dealer_cards][1][0]] %> of <%= SUITS[session[:dealer_cards][1][1]] %>.
-      </li>
-  </ul>
-
-  <h4>Dealer's hand has a value of <%= calculate_hand_value([session[:dealer_cards][1]]) %></h4>
-<% else %>
-
-  <ul>
-  <% session[:dealer_cards].each do |card| %>
-    <li>
-        Dealer has the <%= CARD_NAMES[card[0]] %> of <%= SUITS[card[1]] %>.
-    </li>
-  <% end %>
-  </ul>
-
-  <h4>Dealer's hand has a value of <%= calculate_hand_value(session[:dealer_cards]) %></h4>
+<% if session[:player_turn_over] && !session[:hand_done]%>
+  <form action="/game" method='post'>
+    <input class='btn btn-primary' type='submit' value='Continue With Dealer Turn' name='dealer'/>
+  </form>
 <% end %>
 
-<% if session[:black_jack_or_bust] != "bust" && session[:black_jack_or_bust] != "blackjack" %> 
-  <% if !session[:stay] %>
-    <h4>Would you like to Hit or Stay?</h4>
+</br>
 
-    <p>
-      <form action='/hit' method='post'>
-        <input class='btn' type='submit' value='Hit'> 
-      </form>
-      <form action='/stay' method='post'>
-        <input class='btn' type='submit' value='Stay'>
-      </form>
-    </p>
-  <% else %>
-    <h4>You have elected to stay.</h4>
-  <% end %>
-<% elsif  session[:black_jack_or_bust] == "bust" %>
-  <h4>Sorry, you have busted.</h4>
-<% else %>
-  <h4>Congratulations, you have hit BlackJack.</h4>
+<% if session[:hand_done] %>
+  <h4>Play another Hand?</h4>
+
+  <form action='/game' method ='get'>
+    <input class='btn btn-success' type='submit' value='Next Hand'>
+  </form>
+
 <% end %>
-
-<% if session[:black_jack_or_bust] == "bust" || session[:black_jack_or_bust] == "blackjack" || session[:stay] %>
-  <% if !session[:dealer_active] %>
-    <h4>Reveal Dealer Hole Card?</h4>
-    <% session[:dealer_active] = true %>
-    <form action='/game' method='get'>
-      <input class='btn' type='submit' value='Reveal'>
-    </form>
-  <% else %> 
-    <h4>Continue with Dealer Turn?</h4>
-    <form action='/comp_turn' method='post'>
-      <input class='btn' type='submit' value='Continue'>
-    </form>
-  <% end %>
-<% end %>
-
-
-
