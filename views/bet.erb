@@ -1,0 +1,8 @@
+<h1>Blackjack!</h1>
+
+<h3><%= session[:player_name] %> you have $<%= session[:chip_count] %>.  How much would you like to bet on the next hand?</h3>
+
+<form action="/new_bet" method='post'>
+  <input id='new_bet_form' type="text" name="current_bet"/>
+  <input id='new_bet_btn' type="submit" class="btn btn-success"/>
+</form>

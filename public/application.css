@@ -1,0 +1,44 @@
+img.card_image {
+	margin: 10px 5px 5px 0px;
+}
+
+form#hit_form {
+	float: left;
+  margin-right: 5px;
+}
+
+form#stay_form {
+	float: left;
+}
+
+form#new_bet_form {
+  float: left;
+  margin-right: 5px;
+}
+
+form#same_bet_form {
+  float: left;
+  margin-right: 5px;
+}
+
+input#new_player_form {
+  float: left;
+  margin-right: 5px;
+}
+
+input#new_player_btn {
+  float: left;
+  margin-right: 5px;
+  margin-bottom: 10px;
+}
+
+input#new_bet_form {
+  float: left;
+  margin-right: 5px;
+}
+
+input#new_bet_btn {
+  float: left;
+  margin-right: 5px;
+  margin-bottom: 50px;
+}
