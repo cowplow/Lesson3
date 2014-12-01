@@ -1,0 +1,11 @@
+<h2>Thanks for playing <%= session[:player_name] %></h2>
+
+
+<p>Let's see how you did:</p>
+<ul>
+  <li>You played <%= session[:total_hands] %> total hands.</li>
+  <li>You won: <%= session[:player_wins] %> hands!</li>
+  <li>You lost: <%= session[:player_losses] %> hands.</li>
+  <li>You tied: <%= session[:player_ties] %> hands.</li>
+  <li>You're overall win percantage was: <%= (session[:player_wins].to_f/(session[:player_losses]+session[:player_wins])*100) %>%</li>
+</ul>

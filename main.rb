@@ -8,7 +8,8 @@ use Rack::Session::Cookie, :key => 'rack.session',
                            :secret => 'hashbrown'
 
 BLACK_JACK = 21
-DEALER_HITS_TO = 17 
+DEALER_HITS_TO = 17
+STARTING_CHIP_COUNT = 500 
 
 helpers do
 
@@ -60,20 +61,23 @@ helpers do
     @play_again = true
     @show_player_hand_buttons = false
     session[:chip_count] += (2 * session[:current_bet])
-    @success = "<strong>#{session[:player_name]} wins!</strong> #{msg} You win $#{session[:current_bet]*2}! You now have $#{session[:chip_count]}"
+    session[:player_wins] += 1
+    @success = "<strong>#{session[:player_name]} wins!</strong> #{msg} You win $#{session[:current_bet]}! You now have $#{session[:chip_count]}."
   end
 
   def loser!(msg)
     @play_again = true
     @show_player_hand_buttons = false
-    @error = "<strong>#{session[:player_name]} loses!</strong> #{msg} You now have $#{session[:chip_count]}"
+    session[:player_losses] += 1
+    @error = "<strong>#{session[:player_name]} loses!</strong> #{msg} You lose $#{session[:current_bet]}. You now have $#{session[:chip_count]}."
   end
 
   def tie!(msg)
     @play_again = true
     @show_player_hand_buttons = false
     session[:chip_count] += session[:current_bet]
-    @stay = "<strong>It's a tie!</stong> #{msg} You now have $#{session[:chip_count]}"
+    session[:player_ties] += 1
+    @stay = "<strong>It's a tie!</stong> #{msg} You now have $#{session[:chip_count]}."
   end
 end
 
@@ -99,11 +103,16 @@ post '/new_player' do
     halt erb :new_player
   end
   session[:player_name] = params[:player_name].capitalize 
-  session[:chip_count] = 500
+  session[:chip_count] = STARTING_CHIP_COUNT
+  session[:player_wins] = 0
+  session[:player_losses] = 0
+  session[:player_ties] = 0
+  session[:total_hands] = 0
   redirect '/bet'
 end
 
 get '/game' do
+  session[:total_hands] += 1
   session[:turn] = "player"
   #create a deck and put it in session.
   SUITS = ['H', 'D', 'C', 'S']
@@ -117,8 +126,7 @@ get '/game' do
   session[:dealer_cards] << session[:deck].pop
   session[:player_cards] << session[:deck].pop
   if blackjack?(calculate_hand(session[:player_cards]))
-    @success = "Congratulations. You have a blackjack"
-    redirect '/game/dealer'
+    redirect '/game/player/blackjack'
   end
   
   erb :game
@@ -136,6 +144,12 @@ post '/game/player/hit' do
   else
     @info = "You were dealt the " + pretty_cards(new_card)
   end
+
+  erb :game, layout: false
+end
+
+get '/game/player/blackjack' do
+  @blackjack = "Congratulations you were dealt a blackjack! You should stay ;)"
 
   erb :game
 end
@@ -162,7 +176,7 @@ get '/game/dealer' do
     @show_dealer_hit_button = true
   end
 
-  erb :game   
+  erb :game, layout: false   
 end
 
 post '/game/dealer/hit' do
@@ -184,14 +198,14 @@ get '/game/compare' do
     tie!("Both #{session[:player_name]} and the dealer stayed at #{player_total}!")
   end
 
-  erb :game
+  erb :game, layout: false
 end
 
 
 get '/bet' do
   if session[:chip_count] <= 0
     @info = "You were out of chips.  We have resest your chip count to $500."
-    session[:chip_count] = 500
+    session[:chip_count] = STARTING_CHIP_COUNT
   end
   erb :bet
 end
@@ -216,9 +230,16 @@ post '/same_bet' do
     @error = "You don't have enough chips to make this bet.  Please enter a different  amount."
     redirect '/bet'
   else
+    session[:chip_count] -= session[:current_bet]
     redirect '/game'
   end
 end
+
+
+get '/game_over' do
+  erb :game_over
+end
+
 
 
 
