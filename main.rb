@@ -212,7 +212,7 @@ end
 
 
 post '/new_bet' do
-  if params[:current_bet].empty? || params[:current_bet].to_i == 0
+  if params[:current_bet].empty? || params[:current_bet].to_i <= 0
     @error = "#{params[:current_bet]} is not a valid amount. You must enter an amount more than $0."
     halt erb :bet
   elsif params[:current_bet].to_i > session[:chip_count]
